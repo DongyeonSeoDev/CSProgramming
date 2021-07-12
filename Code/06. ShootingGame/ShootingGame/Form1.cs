@@ -16,8 +16,11 @@ namespace ShootingGame
         /// 0: Right, 1: Left, 2: Up, 3: Down
         /// </summary>
         private bool[] isMove = new bool[4] { false, false, false, false };
-
+        
         private List<Position> bulletPosition = new List<Position>();
+        private List<Position> enemyPosition = new List<Position>();
+
+        private Random random = new Random();
 
         private int speed = 7;
         private int tickCount = 0;
@@ -71,9 +74,14 @@ namespace ShootingGame
                 MoveDown();
             }
 
-            foreach (Position item in bulletPosition)
+            foreach (Position bullet in bulletPosition)
             {
-                item.y -= speed;
+                bullet.y -= speed;
+            }
+
+            foreach (Position enemy in enemyPosition)
+            {
+                enemy.y += speed;
             }
 
             bool removeBullet = false;
@@ -82,17 +90,53 @@ namespace ShootingGame
             {
                 removeBullet = false;
 
-                foreach (Position item in bulletPosition)
+                foreach (Position bullet in bulletPosition)
                 {
-                    if (item.y < 0)
+                    if (bullet.y < 0)
                     {
                         removeBullet = true;
-                        bulletPosition.Remove(item);
+                        bulletPosition.Remove(bullet);
                         break;
                     }
                 }
 
             } while (removeBullet);
+
+            bool removeEnemy = false;
+
+            do
+            {
+                removeEnemy = false;
+
+                foreach (Position enemy in enemyPosition)
+                {
+                    if (enemy.y > 900)
+                    {
+                        removeEnemy = true;
+                        enemyPosition.Remove(enemy);
+                        break;
+                    }
+
+                    if (Player.Location.X - 50 <= enemy.x && Player.Location.X + 50 >= enemy.x && Player.Location.Y - 50 <= enemy.y && Player.Location.Y + 50 >= enemy.y)
+                    {
+                        GameOver();
+                    }
+
+                    foreach (Position bullet in bulletPosition) 
+                    {
+                        if (bullet.x - 50 <= enemy.x && bullet.x + 10 >= enemy.x && bullet.y - 50 <= enemy.y && bullet.y + 10 >= enemy.y)
+                        {
+                            removeEnemy = true;
+                            enemyPosition.Remove(enemy);
+                            bulletPosition.Remove(bullet);
+                            break;
+                        }
+                    }
+
+                    if (removeEnemy) break;
+                }
+
+            } while (removeEnemy);
 
             tickCount++;
 
@@ -101,14 +145,30 @@ namespace ShootingGame
                 bulletPosition.Add(new Position(Player.Location.X + 20, Player.Location.Y));
             }
 
+            if (tickCount == 50)
+            {
+                enemyPosition.Add(new Position(random.Next(0, 430), -50));
+                tickCount = 0;
+            }
+
             Invalidate();
+        }
+
+        private void GameOver()
+        {
+            timer1.Enabled = false;
+
+            if (DialogResult.OK == MessageBox.Show("게임이 자동으로 종료됩니다.", "게임오버", MessageBoxButtons.OK))
+            {
+                this.Close();
+            }
         }
 
         private void MoveRight()
         {
             if (Player.Location.X > 430) return;
 
-            Player.Location = new System.Drawing.Point(Player.Location.X + speed, Player.Location.Y);
+            Player.Location = new Point(Player.Location.X + speed, Player.Location.Y);
             Invalidate();
         }
 
@@ -116,7 +176,7 @@ namespace ShootingGame
         {
             if (Player.Location.X < 2) return;
 
-            Player.Location = new System.Drawing.Point(Player.Location.X - speed, Player.Location.Y);
+            Player.Location = new Point(Player.Location.X - speed, Player.Location.Y);
             Invalidate();
         }
 
@@ -124,7 +184,7 @@ namespace ShootingGame
         {
             if (Player.Location.Y < 2) return;
 
-            Player.Location = new System.Drawing.Point(Player.Location.X, Player.Location.Y - speed);
+            Player.Location = new Point(Player.Location.X, Player.Location.Y - speed);
             Invalidate();
         }
 
@@ -132,7 +192,7 @@ namespace ShootingGame
         {
             if (Player.Location.Y > 800) return;
 
-            Player.Location = new System.Drawing.Point(Player.Location.X, Player.Location.Y + speed);
+            Player.Location = new Point(Player.Location.X, Player.Location.Y + speed);
             Invalidate();
         }
 
@@ -143,10 +203,16 @@ namespace ShootingGame
 
         private void DrawBoard(Graphics graphics)
         {
-            foreach (Position item in bulletPosition)
+            foreach (Position bullet in bulletPosition)
             {
-                Rectangle now_rt = new Rectangle(item.x, item.y, 10, 10);
+                Rectangle now_rt = new Rectangle(bullet.x, bullet.y, 10, 10);
                 graphics.FillRectangle(Brushes.Green, now_rt);
+            }
+
+            foreach (Position enemy in enemyPosition)
+            {
+                Rectangle now_rt = new Rectangle(enemy.x, enemy.y, 50, 50);
+                graphics.FillRectangle(Brushes.Red, now_rt);
             }
         }
     }
