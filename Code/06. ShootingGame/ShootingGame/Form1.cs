@@ -21,11 +21,12 @@ namespace ShootingGame
         public static readonly string dirParameter = AppDomain.CurrentDomain.BaseDirectory + @"\file.txt";
 
         private List<Position> bulletPosition = new List<Position>();
-        private List<Position> enemyPosition = new List<Position>();
+        private List<Enemy> enemys = new List<Enemy>();
 
         private Random random = new Random();
 
         private int speed = 7;
+        private int enemySpeed = 5;
         private int tickCount = 0;
         private int score = 0;
         private int highScore = 0;
@@ -85,41 +86,39 @@ namespace ShootingGame
                 bullet.y -= speed;
             }
 
-            foreach (Position enemy in enemyPosition)
+            foreach (Enemy enemy in enemys)
             {
-                enemy.y += speed;
+                enemy.y += enemySpeed;
             }
 
-            bool removeBullet = false;
+            bool remove;
 
             do
             {
-                removeBullet = false;
+                remove = false;
 
                 foreach (Position bullet in bulletPosition)
                 {
                     if (bullet.y < 0)
                     {
-                        removeBullet = true;
+                        remove = true;
                         bulletPosition.Remove(bullet);
                         break;
                     }
                 }
 
-            } while (removeBullet);
-
-            bool removeEnemy = false;
+            } while (remove);
 
             do
             {
-                removeEnemy = false;
+                remove = false;
 
-                foreach (Position enemy in enemyPosition)
+                foreach (Enemy enemy in enemys)
                 {
                     if (enemy.y > 900)
                     {
-                        removeEnemy = true;
-                        enemyPosition.Remove(enemy);
+                        remove = true;
+                        enemys.Remove(enemy);
                         break;
                     }
 
@@ -132,30 +131,34 @@ namespace ShootingGame
                     {
                         if (bullet.x - 50 <= enemy.x && bullet.x + 10 >= enemy.x && bullet.y - 50 <= enemy.y && bullet.y + 10 >= enemy.y)
                         {
-                            removeEnemy = true;
-                            enemyPosition.Remove(enemy);
+                            remove = true;
                             bulletPosition.Remove(bullet);
 
-                            score += 100;
-
-                            if (highScore < score)
+                            if (enemy.IsDie(1))
                             {
-                                highScore = score;
-                                SaveFile();
+                                enemys.Remove(enemy);
 
-                                label2.Text = "HIGHSCORE: " + highScore;
+                                score += 100;
+
+                                if (highScore < score)
+                                {
+                                    highScore = score;
+                                    SaveFile();
+
+                                    label2.Text = "HIGHSCORE: " + highScore;
+                                }
+
+                                label1.Text = "SCORE: " + score;
                             }
-
-                            label1.Text = "SCORE: " + score;
 
                             break;
                         }
                     }
 
-                    if (removeEnemy) break;
+                    if (remove) break;
                 }
 
-            } while (removeEnemy);
+            } while (remove);
 
             tickCount++;
 
@@ -164,9 +167,14 @@ namespace ShootingGame
                 bulletPosition.Add(new Position(Player.Location.X + 20, Player.Location.Y));
             }
 
-            if (tickCount == 50)
+            if (tickCount % 50 == 0)
             {
-                enemyPosition.Add(new Position(random.Next(0, 430), -50));
+                enemys.Add(new Enemy(random.Next(0, 430), -50, 3));
+            }
+
+            if (tickCount == 300)
+            {
+                enemySpeed++;
                 tickCount = 0;
             }
 
@@ -228,7 +236,7 @@ namespace ShootingGame
                 graphics.FillRectangle(Brushes.Green, now_rt);
             }
 
-            foreach (Position enemy in enemyPosition)
+            foreach (Enemy enemy in enemys)
             {
                 Rectangle now_rt = new Rectangle(enemy.x, enemy.y, 50, 50);
                 graphics.FillRectangle(Brushes.Red, now_rt);
