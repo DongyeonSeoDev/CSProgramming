@@ -22,6 +22,7 @@ namespace ShootingGame
 
         private List<Position> bulletPosition = new List<Position>();
         private List<Enemy> enemys = new List<Enemy>();
+        private List<Position> enemyBullets = new List<Position>();
 
         private Random random = new Random();
 
@@ -91,6 +92,11 @@ namespace ShootingGame
                 enemy.y += enemySpeed;
             }
 
+            foreach (Position enemyBullet in enemyBullets)
+            {
+                enemyBullet.y += speed + 2;
+            }
+
             bool remove;
 
             do
@@ -107,6 +113,41 @@ namespace ShootingGame
                     }
                 }
 
+            } while (remove);
+
+            do
+            {
+                remove = false;
+
+                foreach (Position enemyBullet in enemyBullets)
+                {
+                    if (enemyBullet.y > 900)
+                    {
+                        remove = true;
+                        enemyBullets.Remove(enemyBullet);
+                        break;
+                    }
+
+                    if (Player.Location.X - 10 <= enemyBullet.x && Player.Location.X + 50 >= enemyBullet.x && Player.Location.Y - 10 <= enemyBullet.y && Player.Location.Y + 50 >= enemyBullet.y)
+                    {
+                        GameOver();
+                    }
+
+                    foreach (Position bullet in bulletPosition)
+                    {
+                        if (bullet.x - 10 <= enemyBullet.x && bullet.x + 10 >= enemyBullet.x && bullet.y - 10 <= enemyBullet.y && bullet.y + 10 >= enemyBullet.y)
+                        {
+                            remove = true;
+                            bulletPosition.Remove(bullet);
+                            enemyBullets.Remove(enemyBullet);
+
+                            break;
+                        }
+                    }
+
+                    if (remove) break;
+                }
+                
             } while (remove);
 
             do
@@ -169,6 +210,11 @@ namespace ShootingGame
 
             if (tickCount % 50 == 0)
             {
+                foreach (Enemy enemy in enemys)
+                {
+                    enemyBullets.Add(new Position(enemy.x + 20, enemy.y));
+                }
+
                 enemys.Add(new Enemy(random.Next(0, 430), -50, 3));
             }
 
@@ -234,6 +280,12 @@ namespace ShootingGame
             {
                 Rectangle now_rt = new Rectangle(bullet.x, bullet.y, 10, 10);
                 graphics.FillRectangle(Brushes.Green, now_rt);
+            }
+
+            foreach (Position enemyBullet in enemyBullets)
+            {
+                Rectangle now_rt = new Rectangle(enemyBullet.x, enemyBullet.y, 10, 10);
+                graphics.FillRectangle(Brushes.Magenta, now_rt);
             }
 
             foreach (Enemy enemy in enemys)
