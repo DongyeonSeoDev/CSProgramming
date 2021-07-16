@@ -23,6 +23,7 @@ namespace ShootingGame
         private List<Position> bulletPosition = new List<Position>();
         private List<Enemy> enemys = new List<Enemy>();
         private List<Position> enemyBullets = new List<Position>();
+        private List<Position> items = new List<Position>();
 
         private Random random = new Random();
 
@@ -31,6 +32,7 @@ namespace ShootingGame
         private int tickCount = 0;
         private int score = 0;
         private int highScore = 0;
+        private int damage = 1;
 
         public Form1()
         {
@@ -94,7 +96,12 @@ namespace ShootingGame
 
             foreach (Position enemyBullet in enemyBullets)
             {
-                enemyBullet.y += speed + 2;
+                enemyBullet.y += enemySpeed + 2;
+            }
+
+            foreach (Position item in items)
+            {
+                item.y += speed;
             }
 
             bool remove;
@@ -175,7 +182,7 @@ namespace ShootingGame
                             remove = true;
                             bulletPosition.Remove(bullet);
 
-                            if (enemy.IsDie(1))
+                            if (enemy.IsDie(damage))
                             {
                                 enemys.Remove(enemy);
 
@@ -201,6 +208,33 @@ namespace ShootingGame
 
             } while (remove);
 
+            do
+            {
+                remove = false;
+
+                foreach (Position item in items)
+                {
+                    if (item.y > 900)
+                    {
+                        remove = true;
+                        items.Remove(item);
+                        break;
+                    }
+
+                    if (Player.Location.X - 30 <= item.x && Player.Location.X + 50 >= item.x && Player.Location.Y - 30 <= item.y && Player.Location.Y + 50 >= item.y)
+                    {
+                        damage++;
+
+                        remove = true;
+                        items.Remove(item);
+                        break;
+                    }
+
+                    if (remove) break;
+                }
+
+            } while (remove);
+
             tickCount++;
 
             if (tickCount % 10 == 0)
@@ -208,19 +242,27 @@ namespace ShootingGame
                 bulletPosition.Add(new Position(Player.Location.X + 20, Player.Location.Y));
             }
 
-            if (tickCount % 50 == 0)
+            if (tickCount % 30 == 0)
             {
                 foreach (Enemy enemy in enemys)
                 {
                     enemyBullets.Add(new Position(enemy.x + 20, enemy.y));
                 }
-
-                enemys.Add(new Enemy(random.Next(0, 430), -50, 3));
             }
 
-            if (tickCount == 300)
+            if (tickCount % (50 - enemySpeed * 3) == 0)
+            {
+                enemys.Add(new Enemy(random.Next(0, 430), -50, enemySpeed - 2));
+            }
+            
+            if (tickCount % 300 == 0)
             {
                 enemySpeed++;
+            }
+
+            if (tickCount == 600)
+            {
+                items.Add(new Position(random.Next(0, 450), -30));
                 tickCount = 0;
             }
 
@@ -292,6 +334,12 @@ namespace ShootingGame
             {
                 Rectangle now_rt = new Rectangle(enemy.x, enemy.y, 50, 50);
                 graphics.FillRectangle(Brushes.Red, now_rt);
+            }
+
+            foreach (Position item in items)
+            {
+                Rectangle now_rt = new Rectangle(item.x, item.y, 30, 30);
+                graphics.FillRectangle(Brushes.Blue, now_rt);
             }
         }
 
