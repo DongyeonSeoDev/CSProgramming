@@ -34,10 +34,22 @@ namespace ShootingGame
         private int highScore = 0;
         private int damage = 1;
 
+        private float randomTickSpawnEnemy;
+        private float randomTickEnemySpeedUp;
+        private float randomTickSpawnItem;
+
+        private int spawnEnemyTick = 0;
+        private int enemySpeedUpTick = 0;
+        private int spawnItemTick = 0;
+
         public Form1()
         {
             InitializeComponent();
             LoadFile();
+
+            randomTickSpawnEnemy = random.Next(10, 60);
+            randomTickEnemySpeedUp = random.Next(300, 500);
+            randomTickSpawnItem = random.Next(400, 600);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -236,13 +248,16 @@ namespace ShootingGame
             } while (remove);
 
             tickCount++;
+            spawnEnemyTick++;
+            enemySpeedUpTick++;
+            spawnItemTick++;
 
             if (tickCount % 10 == 0)
             {
                 bulletPosition.Add(new Position(Player.Location.X + 20, Player.Location.Y));
             }
 
-            if (tickCount % 30 == 0)
+            if (tickCount % 50 == 0)
             {
                 foreach (Enemy enemy in enemys)
                 {
@@ -250,19 +265,32 @@ namespace ShootingGame
                 }
             }
 
-            if (tickCount % (50 - enemySpeed * 3) == 0)
+            if (spawnEnemyTick % randomTickSpawnEnemy == 0)
             {
                 enemys.Add(new Enemy(random.Next(0, 430), -50, enemySpeed - 2));
+
+                randomTickSpawnEnemy = random.Next(10, 60);
+                spawnEnemyTick = 0;
             }
             
-            if (tickCount % 300 == 0)
+            if (enemySpeedUpTick % randomTickEnemySpeedUp == 0)
             {
                 enemySpeed++;
+                
+                randomTickEnemySpeedUp = random.Next(300, 500);
+                enemySpeedUpTick = 0;
             }
 
-            if (tickCount == 600)
+            if (spawnItemTick % randomTickSpawnItem == 0)
             {
                 items.Add(new Position(random.Next(0, 450), -30));
+
+                randomTickSpawnItem = random.Next(400, 600);
+                spawnItemTick = 0;
+            }
+
+            if (tickCount == int.MaxValue)
+            {
                 tickCount = 0;
             }
 
