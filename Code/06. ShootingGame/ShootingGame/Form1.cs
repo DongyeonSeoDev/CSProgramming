@@ -410,5 +410,24 @@ namespace ShootingGame
 
             label2.Text = "HIGHSCORE: " + highScore;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            label3.Visible = false;
+            button1.Visible = false;
+            button2.Visible = false;
+            button1.Enabled = false;
+            button2.Enabled = false;
+
+            label1.Visible = true;
+            label2.Visible = true;
+            Player.Visible = true;
+            timer1.Enabled = true;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
