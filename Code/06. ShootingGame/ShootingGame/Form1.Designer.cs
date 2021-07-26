@@ -37,6 +37,7 @@ namespace ShootingGame
             this.label3 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.Player)).BeginInit();
             this.SuspendLayout();
             // 
@@ -93,7 +94,7 @@ namespace ShootingGame
             // 
             this.button1.BackColor = System.Drawing.Color.LightSkyBlue;
             this.button1.Font = new System.Drawing.Font("맑은 고딕", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.button1.Location = new System.Drawing.Point(82, 575);
+            this.button1.Location = new System.Drawing.Point(101, 572);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(284, 56);
             this.button1.TabIndex = 4;
@@ -106,7 +107,7 @@ namespace ShootingGame
             this.button2.BackColor = System.Drawing.Color.Red;
             this.button2.Font = new System.Drawing.Font("맑은 고딕", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.button2.ForeColor = System.Drawing.Color.Black;
-            this.button2.Location = new System.Drawing.Point(82, 655);
+            this.button2.Location = new System.Drawing.Point(101, 655);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(284, 56);
             this.button2.TabIndex = 5;
@@ -114,11 +115,24 @@ namespace ShootingGame
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // textBox1
+            // 
+            this.textBox1.Font = new System.Drawing.Font("맑은 고딕", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.textBox1.HideSelection = false;
+            this.textBox1.Location = new System.Drawing.Point(28, 423);
+            this.textBox1.MaxLength = 20;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.PlaceholderText = "아이디";
+            this.textBox1.Size = new System.Drawing.Size(423, 34);
+            this.textBox1.TabIndex = 6;
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(482, 853);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label3);
@@ -145,6 +159,7 @@ namespace ShootingGame
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

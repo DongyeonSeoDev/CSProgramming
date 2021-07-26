@@ -34,6 +34,8 @@ namespace ShootingGame
         private int highScore = 0;
         private int damage = 1;
 
+        private string highScoreId;
+
         private float randomTickSpawnEnemy;
         private float randomTickEnemySpeedUp;
         private float randomTickSpawnItem;
@@ -45,7 +47,6 @@ namespace ShootingGame
         public Form1()
         {
             InitializeComponent();
-            LoadFile();
 
             randomTickSpawnEnemy = random.Next(10, 60);
             randomTickEnemySpeedUp = random.Next(300, 500);
@@ -203,9 +204,10 @@ namespace ShootingGame
                                 if (highScore < score)
                                 {
                                     highScore = score;
+                                    highScoreId = textBox1.Text;
                                     SaveFile();
 
-                                    label2.Text = "HIGHSCORE: " + highScore;
+                                    label2.Text = "HIGHSCORE: " + highScore + " (ID: " + highScoreId + ")";
                                 }
 
                                 label1.Text = "SCORE: " + score;
@@ -379,11 +381,13 @@ namespace ShootingGame
             }
 
             string Msg = highScore.ToString();
+            string Msg2 = highScoreId.ToString();
 
             FileStream fParameter = new FileStream(dirParameter, FileMode.Create, FileAccess.Write);
             StreamWriter m_WriterParameter = new StreamWriter(fParameter);
             m_WriterParameter.BaseStream.Seek(0, SeekOrigin.End);
-            m_WriterParameter.Write(Msg);
+            m_WriterParameter.WriteLine(Msg);
+            m_WriterParameter.WriteLine(Msg2);
             m_WriterParameter.Flush();
             m_WriterParameter.Close();
         }
@@ -391,6 +395,7 @@ namespace ShootingGame
         private void LoadFile()
         {
             string msg;
+            string msg2;
 
             if (File.Exists(dirParameter))
             {
@@ -398,26 +403,33 @@ namespace ShootingGame
 
                 StreamReader m_ReaderParameter = new StreamReader(fParameter);
                 msg = m_ReaderParameter.ReadLine();
+                msg2 = m_ReaderParameter.ReadLine();
                 m_ReaderParameter.Close();
 
                 int.TryParse(msg, out int score);
                 highScore = score;
+                highScoreId = msg2;
             }
             else
             {
                 highScore = 0;
+                highScoreId = textBox1.Text;
             }
 
-            label2.Text = "HIGHSCORE: " + highScore;
+            label2.Text = "HIGHSCORE: " + highScore + " (ID: " + highScoreId + ")";
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            LoadFile();
+
             label3.Visible = false;
             button1.Visible = false;
             button2.Visible = false;
+            textBox1.Visible = false;
             button1.Enabled = false;
             button2.Enabled = false;
+            textBox1.Enabled = false;
 
             label1.Visible = true;
             label2.Visible = true;
